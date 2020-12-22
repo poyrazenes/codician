@@ -3,132 +3,111 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Person;
 use Illuminate\Http\Request;
 
 class PersonController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return mixed
-     */
     public function index($id)
     {
         $company = Company::findOrFail($id);
 
         $rows = $company->people;
 
-        $active = 'companies';
+        $active = 'people';
 
         return view(
             'person.index',
-            compact('rows', 'active')
+            compact('rows', 'active', 'company')
         );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return mixed
-     */
-    public function create()
+    public function create($id)
     {
+        $company = Company::findOrFail($id);
+
         $edit = 0;
 
-        $action = route('companies.store');
+        $action = route('companies.persons.store', $company->id);
 
-        $active = 'companies';
+        $active = 'people';
 
         return view(
-            'company.edit',
-            compact('edit', 'active', 'action')
+            'person.edit',
+            compact('edit', 'active', 'action', 'company')
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return mixed
-     */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
+        $company = Company::findOrFail($id);
+
         $data = $request->validate([
-            'name' => 'required|max:200',
-            'link' => 'required|max:200'
+            'first_name' => 'required|max:200',
+            'last_name' => 'required|max:200',
+            'title' => 'required|max:200',
+            'email' => 'required|email|max:200|unique:people',
+            'phone' => 'required|numeric'
         ]);
 
-        Company::create($data);
+        $data['company_id'] = $company->id;
 
-        return redirect()->route('companies.index');
+        Person::create($data);
+
+        return redirect()->route('companies.persons.index', $company->id);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return mixed
-     */
-    public function edit($id)
+    public function edit($c_id, $id)
     {
-        $row = Company::findOrFail($id);
+        $company = Company::findOrFail($c_id);
+
+        $row = Person::findOrFail($id);
 
         $edit = 1;
 
-        $action = route('companies.update', $row->id);
+        $action = route('companies.persons.update', [$company->id, $row->id]);
 
-        $active = 'companies';
+        $active = 'people';
 
         return view(
-            'company.edit',
-            compact('row', 'edit', 'active', 'action')
+            'person.edit',
+            compact('edit', 'active', 'action', 'company', 'row')
         );
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return mixed
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, $c_id, $id)
     {
-        $data = $request->validate([
-            'name' => 'required|max:200',
-            'link' => 'required|max:200'
-        ]);
+        $company = Company::findOrFail($c_id);
 
-        $row = Company::findOrFail($id);
+        $row = Person::findOrFail($id);
+
+        $data = $request->validate([
+            'first_name' => 'required|max:200',
+            'last_name' => 'required|max:200',
+            'title' => 'required|max:200',
+            'email' => 'required|email|max:200|unique:people,email,' . $row->id,
+            'phone' => 'required|numeric'
+        ]);
 
         $row->update($data);
 
-        return redirect()->route('companies.index');
+        return redirect()->route('companies.persons.index', $company->id);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return mixed
-     */
-    public function destroy($id)
+    public function destroy($c_id, $id)
     {
-        $row = Company::find($id);
+        $company = Company::findOrFail($c_id);
+
+        $row = Person::where('company_id', $company->id)
+            ->where('id', $id)->firstOrFail();
 
         $row->delete();
 
-        return redirect()->route('companies.index');
+        return redirect()->route('companies.persons.index', $company->id);
     }
 }
