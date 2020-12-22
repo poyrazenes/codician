@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Pdfcrowd\HtmlToImageClient;
 
 class FetchCompanyWebSite implements ShouldQueue
 {
@@ -37,11 +38,20 @@ class FetchCompanyWebSite implements ShouldQueue
         if ($this->company) {
             $response = Http::get($this->company->link);
 
+            $client = new HtmlToImageClient(
+                "demo",
+                "ce544b6ea52a5621fb9d55f8b542d14d"
+            );
+
+            $name = Str::slug($this->company->name);
+
+            $client->setOutputFormat("png");
+
             $html = $response->body();
+            $image = $client->convertUrl($this->company->link);
 
-            $name = Str::slug($this->company->name) . '-' . time() . '.html';
-
-            Storage::disk('company_pages')->put($name, $html);
+            Storage::disk('company_pages')->put($name . '.html', $html);
+            Storage::disk('company_pages')->put($name . '.png', $image);
         }
     }
 }
