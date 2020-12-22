@@ -1,16 +1,13 @@
 @extends('layout')
 
 @section('content')
-    <a class="btn btn-sm btn-secondary float-right mb-3" href="{{ action('PersonController@create', $company->id) }}">Add</a>
+    <a class="btn btn-sm btn-secondary float-right mb-3" href="{{ action('AddressController@create', $company->id) }}">Add</a>
     <table class="table">
         <thead class="thead-dark">
         <tr>
             <th scope="col">#</th>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Title</th>
-            <th scope="col">Email</th>
-            <th scope="col">Phone</th>
+            <th scope="col">Latitude</th>
+            <th scope="col">Longitude</th>
             <th scope="col">Operations</th>
         </tr>
         </thead>
@@ -18,21 +15,18 @@
         @foreach($rows as $row)
             <tr>
                 <th>{{ $row->id }}</th>
-                <td>{{ $row->first_name }}</td>
-                <td>{{ $row->last_name }}</td>
-                <td>{{ $row->title }}</td>
-                <td>{{ $row->email }}</td>
-                <td>{{ $row->phone }}</td>
+                <td>{{ $row->latitude }}</td>
+                <td>{{ $row->longitude }}</td>
                 <td>
-                    <a class="btn btn-info btn-xs" href="{{ action('PersonController@edit', [$company->id, $row->id]) }}">Edit</a>
+                    <a class="btn btn-light btn-xs" href="{{ action('MapController@show', [$row->id]) }}">Map</a>
+                    <a class="btn btn-info btn-xs" href="{{ action('AddressController@edit', [$company->id, $row->id]) }}">Edit</a>
                     <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modalDelete"
-                       data-action="{{ action('PersonController@destroy', [$company->id, $row->id]) }}">Delete</a>
+                       data-action="{{ action('AddressController@destroy', [$company->id, $row->id]) }}">Delete</a>
                 </td>
             </tr>
         @endforeach
         </tbody>
     </table>
-
     @widget('Modals\Delete')
 @endsection
 

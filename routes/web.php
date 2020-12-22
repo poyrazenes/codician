@@ -18,3 +18,5 @@ Route::view('/', 'home', ['active' => 'home'])->name('home');
 Route::resource('companies', 'CompanyController');
 Route::resource('companies.persons', 'PersonController');
 Route::resource('companies.addresses', 'AddressController');
+
+Route::get('/map/{id}', 'MapController@show');

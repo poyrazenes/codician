@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Jobs\FetchCompanyWebSite;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller
@@ -56,7 +57,9 @@ class CompanyController extends Controller
             'link' => 'required|max:200'
         ]);
 
-        Company::create($data);
+        $company = Company::create($data);
+
+        $this->dispatch(new FetchCompanyWebSite($company));
 
         return redirect()->route('companies.index');
     }
