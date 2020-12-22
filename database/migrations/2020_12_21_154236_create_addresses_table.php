@@ -15,7 +15,13 @@ class CreateAddressesTable extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->string('latitude', 50);
+            $table->string('longitude', 50);
             $table->timestamps();
+
+            $table->foreign('company_id')->references('id')
+                ->on('companies')->cascadeOnDelete();
         });
     }
 
