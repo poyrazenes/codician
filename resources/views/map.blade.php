@@ -13,7 +13,7 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.js"></script>
 <script>
-    var ibbMAP = new SehirHaritasiAPI({mapFrame:"mapFrame",apiKey:"..."}, function(){
+    var ibbMAP = new SehirHaritasiAPI({mapFrame:"mapFrame",apiKey:"ac952924063b4c288884a127ad532b00"}, function(){
         ibbMAP.Panorama.Open({
             lat: {{ $address->latitude }},
             lon: {{ $address->longitude }},
