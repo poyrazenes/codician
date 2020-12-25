@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Jobs\FetchCompanyWebSite;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CompanyController extends Controller
 {
@@ -68,11 +70,31 @@ class CompanyController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return mixed
      */
-    public function show($id)
+    public function show(Request  $request, $id)
     {
-        //
+        $row = Company::findOrFail($id);
+
+        $type = $request->input('type');
+
+        if (!in_array($type, ['html', 'png'])) {
+            $type = 'html';
+        }
+
+        $name = Str::slug($row->name);
+
+        if (!Storage::disk('company_pages')->has("$name.$type")) {
+            abort(404);
+        }
+
+        $content = Storage::disk('company_pages')->get("$name.$type");
+
+        if ($type === 'html') {
+            return $content;
+        } else {
+            return response()->make($content, 200)->header('Content-Type', 'image/png');
+        }
     }
 
     /**

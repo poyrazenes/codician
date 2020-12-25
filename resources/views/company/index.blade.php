@@ -18,7 +18,8 @@
                 <td>{{ $row->name }}</td>
                 <td>{{ $row->link }}</td>
                 <td>
-                    <a class="btn btn-light btn-xs" href="{{ action('CompanyController@show', $row->id) }}">Show</a>
+                    <a class="btn btn-light btn-xs" href="{{ action('CompanyController@show', ['company' => $row->id, 'type' => 'png']) }}">Image</a>
+                    <a class="btn btn-light btn-xs" href="{{ action('CompanyController@show', ['company' => $row->id, 'type' => 'html']) }}">Html</a>
                     <a class="btn btn-info btn-xs" href="{{ action('CompanyController@edit', $row->id) }}">Edit</a>
                     <a class="btn btn-info btn-xs" href="{{ action('PersonController@index', $row->id) }}">Person</a>
                     <a class="btn btn-info btn-xs" href="{{ action('AddressController@index', $row->id) }}">Address</a>
